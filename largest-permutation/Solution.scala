@@ -1,23 +1,36 @@
 object Solution {
   import scala.annotation.tailrec
 
-  @tailrec
-  def calc(l: List[Int], k: Int, p: Vector[Int]): List[Int] = {
-    if (k == 0 || p.length == 1) l.reverse ::: p.toList
-    else if (p.isEmpty) l.reverse
-    else {
-      val h = p.head
-      val t = p.tail
-      val max = t.zipWithIndex.maxBy(_._1)
-      if (max._1 > h) calc(max._1 :: l, k-1, t.updated(max._2, h))
-      else calc(h :: l, k, t)
+  def calc(N: Int, K: Int, stream: Stream[Int]) = {
+    val index = Array.fill[Int](N)(-1)
+
+    @tailrec def get(i: Int): Int = {
+      val x = index(i)
+      if (x == -1) i else get(x)
     }
+
+    def fn(n: Int, k: Int, s: Stream[Int]): Stream[Int] = s match {
+      case Stream.Empty => Stream.empty
+      case h #:: tail =>
+        val value = get(h-1)+1
+        if (k == 0)
+          value #:: fn(n-1, 0, tail)
+        else if (value < n) {
+          index(n-1) = h-1
+          n #:: fn(n-1, k-1, tail)
+        } else
+          value #:: fn(n-1, k, tail)
+    }
+
+    fn(N, K, stream)
   }
+
 
   def main(args: Array[String]) {
     val scanner = new java.util.Scanner(System.in)
     val n = scanner.nextInt
     val k = scanner.nextInt
-    System.out.println( calc(Nil, k, Vector.fill(n) { scanner.nextInt }).mkString(" ") )
+    val input = Stream.fill(n) { scanner.nextInt }
+    System.out.println(calc(n, k, input) mkString " ")
   }
 }
