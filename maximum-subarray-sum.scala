@@ -1,4 +1,10 @@
-// https://www.hackerrank.com/challenges/maximum-subarray-sum
+/*
+https://www.hackerrank.com/challenges/maximum-subarray-sum
+
+References:
+- Kadane algorithm
+- https://stackoverflow.com/questions/31113993/maximum-subarray-sum-modulo-m
+*/
 object Solution {
   import scala.math.max
   import scala.collection.immutable.TreeSet
