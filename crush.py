@@ -1,5 +1,7 @@
 #!/bin/python3
 
+# https://www.hackerrank.com/challenges/crush
+
 import sys
 
 if __name__ == "__main__":
