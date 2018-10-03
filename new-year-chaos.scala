@@ -2,19 +2,20 @@
 https://www.hackerrank.com/challenges/new-year-chaos
 */
 object Solution {
-  // Binary Index Tree (aka. Fenwick tree), storing how many times `i` occurs.
-  // In our task it's always 1 per `i`, but the tree allows fast lookups to
-  // determine how many values in a range (i,j] were added.
+  // Binary Index Tree (aka. Fenwick tree), storing how many times `>=i` occurs.
+  //
+  // Most examples of BIT store the SUM of elements for indeces up to `i`.
+  // Instead, this implementation is designed to store and query the COUNT of
+  // elements for indeces from `i` and above.
   case class BITree(n: Int) {
     private val a = new Array[Int](n)
     def add(i: Int): Unit =
-      for {x <- Iterator.iterate(i+1) { j => j + (j & -j) }.takeWhile(_ <= n)}
-        a(x-1) += 1
-    def count(i: Int): Int = ( // (0,i]
       for {x <- Iterator.iterate(i+1) { j => j - (j & -j) }.takeWhile(_ > 0)}
+        a(x-1) += 1
+    def count(i: Int): Int = ( // [i,n]
+      for {x <- Iterator.iterate(i+1) { j => j + (j & -j) }.takeWhile(_ <= n)}
         yield a(x-1)
     ).sum
-    def count(l: Int, r: Int): Int = count(r) - count(l) // (l,r]
   }
 
   def minBribes(n: Int, input: Iterator[Int]): Int = {
@@ -23,7 +24,7 @@ object Solution {
       case (acc, (i, index)) if acc < 0 || i-2 > index+1 => -1
       case (acc, (i, index)) =>
         bit.add(i-1)
-        acc + bit.count(i-1, n-1)
+        acc + bit.count(i)
     }
   }
 
