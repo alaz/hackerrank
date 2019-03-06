@@ -1,19 +1,46 @@
 /*
 https://www.hackerrank.com/challenges/ctci-merge-sort
 */
-import scala.collection.immutable.TreeMap
-
 object Solution {
-  def calc(it: Iterator[Int]) =
-    it.foldLeft((0, TreeMap.empty[Int,Int])) { case ((inv, m), n) =>
-      (inv + m.from(n+1).values.sum, m.updated(n, m.getOrElse(n, 0) + 1))
-    }._1
+  // insertion sort
+  // O(n²•log n)
+  def calc(d: Int, it: Iterator[Int]) = {
+    val a = Array.ofDim[Int](d)
+
+    // binary search on the left side
+    // O(log n)
+    def bsearch(upper: Int, gt: Int): Int = {
+      var (l, r) = (0, upper);
+      while (l != r) {
+        val m = (l + r) / 2
+        if (a(m) <= gt) {
+          l = m+1
+        } else {
+          r = m
+        }
+      }
+      l
+    }
+
+    it.zipWithIndex.foldLeft(0L) {
+      case (inv, (n, i)) if i == 0 || a(i-1) <= n =>
+        a(i) = n
+        inv
+
+      case (inv, (n, i)) =>
+        val j = bsearch(i - 1, n) //a.indexWhere(_ > n)
+        Array.copy(a, j, a, j+1, i-j) // O(n)
+        a(j) = n
+        inv + i - j
+    }
+  }
 
   def main(args: Array[String]) {
     val scanner = new java.util.Scanner(System.in)
     for (_ <- 0 until scanner.nextInt) {
-      val it = Iterator.fill(scanner.nextInt) { scanner.nextInt }
-      System.out.println(calc(it))
+      val d = scanner.nextInt
+      val it = Iterator.fill(d) { scanner.nextInt }
+      System.out.println(calc(d, it))
     }
   }
 }
