@@ -27,22 +27,27 @@ readLines(process.stdin, function* main() {
 })
 
 function longest(s1, s2) {
-  const a = new Array(s1.length);
-  for (let i = 0; i < s1.length; i++) {
-    a[i] = new Array(s2.length);
+  const n = s1.length;
+  const ai_1 = new Array(n);
+  for (let j = 0; j < n; j++) {
+    ai_1[j] = 0;
   }
 
-  for (let i = 0; i < s1.length; i++) {
-    for (let j = 0; j < s2.length; j++) {
+  for (let i = 0; i < n; i++) {
+    let aj_1 = 0;
+    for (let j = 0; j < n; j++) {
+      let temp = 0;
       if (s1[i] === s2[j]) {
-        const x = i < 1 || j < 1 ? 0 : a[i-1][j-1];
-        a[i][j] = x + 1;
+        temp = 1 + (j < 1 ? 0 : ai_1[j-1]);
       } else {
-        const x = i < 1 ? 0 : a[i-1][j];
-        const y = j < 1 ? 0 : a[i][j-1];
-        a[i][j] = Math.max(x, y);
+        temp = Math.max(aj_1, ai_1[j]);
       }
+      if (j > 0) {
+        ai_1[j-1] = aj_1;
+      }
+      aj_1 = temp;
     }
+    ai_1[n-1] = aj_1;
   }
-  return a[s1.length-1][s2.length-1];
+  return ai_1[n-1];
 }
