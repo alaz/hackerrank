@@ -27,31 +27,22 @@ readLines(process.stdin, function* main() {
 })
 
 function longest(s1, s2) {
-  function fn(acc, i1, i2) {
-    if (i1 >= s1.length || i2 >= s2.length) {
-      return acc;
-    } else if (s1[i1] === s2[i2]) {
-      return fn(acc+1, i1+1, i2+1);
-    }
-
-    function fmax(s, c, j, f) {
-      let n = acc;
-      while (true) {
-        j = s.indexOf(c, j+1);
-        if (j < 0) {
-          break;
-        }
-        n = Math.max(n, f(j));
-      }
-      return n;
-    }
-
-    return Math.max(
-      fn(acc, i1+1, i2+1),
-      fmax(s1, s2[i2], i1, (j) => fn(acc+1, j+1, i2+1)),
-      fmax(s2, s1[i1], i2, (j) => fn(acc+1, i1+1, j+1))
-    );
+  const a = new Array(s1.length);
+  for (let i = 0; i < s1.length; i++) {
+    a[i] = new Array(s2.length);
   }
 
-  return fn(0, 0, 0);
+  for (let i = 0; i < s1.length; i++) {
+    for (let j = 0; j < s2.length; j++) {
+      if (s1[i] === s2[j]) {
+        const x = i < 1 || j < 1 ? 0 : a[i-1][j-1];
+        a[i][j] = x + 1;
+      } else {
+        const x = i < 1 ? 0 : a[i-1][j];
+        const y = j < 1 ? 0 : a[i][j-1];
+        a[i][j] = Math.max(x, y);
+      }
+    }
+  }
+  return a[s1.length-1][s2.length-1];
 }
